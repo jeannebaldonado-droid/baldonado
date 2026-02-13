@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        input[type="date"] {
+            cursor: pointer;
+        }
+
+        select {
+            cursor: pointer;
+            background-color: white;
+            padding: 12px 12px;
+        }
+
+        select option {
+            padding: 8px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .registered-data {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .registered-data h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .data-value {
+            color: #667eea;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            label {
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            input,
+            select {
+                padding: 14px 12px;
+                font-size: 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 25px;
+            }
+
+            button {
+                padding: 14px;
+                font-size: 15px;
+            }
+
+            .registered-data {
+                padding: 15px;
+                margin-top: 15px;
+            }
+
+            .registered-data h3 {
+                font-size: 15px;
+                margin-bottom: 12px;
+            }
+
+            .data-item {
+                padding: 6px 0;
+                font-size: 14px;
+            }
+
+            .data-label {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registration Form</h1>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="firstName">First Name *</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="middleName">Middle Name</label>
+                <input type="text" id="middleName" name="middleName" placeholder="Enter your middle name">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="province">Province *</label>
+                    <select id="province" name="province" required>
+                        <option value="">Select a province</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="municipality">Municipality *</label>
+                    <select id="municipality" name="municipality" required>
+                        <option value="">Select a municipality</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dob">Date of Birth *</label>
+                    <input type="date" id="dob" name="dob" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age *</label>
+                    <input type="number" id="age" name="age" placeholder="Age" min="0" max="150" required readonly>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-save">Save Registration</button>
+                <button type="reset" class="btn-reset">Clear Form</button>
+            </div>
+
+            <div id="message" class="message"></div>
+            <div id="registeredData" class="registered-data">
+                <h3>✓ Registration Saved Successfully</h3>
+                <div class="data-item">
+                    <span class="data-label">First Name:</span>
+                    <span class="data-value" id="displayFirstName"></span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Middle Name:</span>
+                    <span class="data-value" id="displayMiddleName"></span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Province:</span>
+                    <span class="data-value" id="displayProvince"></span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Municipality:</span>
+                    <span class="data-value" id="displayMunicipality"></span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Date of Birth:</span>
+                    <span class="data-value" id="displayDOB"></span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Age:</span>
+                    <span class="data-value" id="displayAge"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Philippines Province and Municipality Data
+        const provincesData = {
+            'Abra': ['Bangued', 'Boliney', 'Bucay', 'Bucloc', 'Daguioman', 'Danglas', 'Dolores', 'La Paz', 'Lacub', 'Lagangilang', 'Lagayan', 'Langiden', 'Licuan-Baay', 'Malasiqui', 'Manabo', 'Panuitan', 'Peñarrubia', 'Pilar', 'Sallapada', 'San Isidro', 'San Quintin', 'Tayum', 'Tineg', 'Tobias Fornier'],
+            'Agusan del Norte': ['Butuan City', 'Cabadbaran', 'Nasipit', 'Magallanes', 'Kitcharao', 'Santiago', 'Las Nieves', 'Jabonga'],
+            'Agusan del Sur': ['Tandag', 'Bislig', 'Calinog', 'Calinog', 'San Luis', 'Bunawan', 'Loreto', 'Sibagat', 'Talacogon', 'Veruela', 'Bayugan', 'Prosperidad', 'Trento'],
+            'Aklan': ['Kalibo', 'Altavas', 'Balete', 'Banga', 'Ibajay', 'Jamindan', 'Maay', 'Makato', 'Malay', 'Nabas', 'New Washington', 'Numancia', 'Tangalan'],
+            'Albay': ['Legazpi', 'Daraga', 'Ligao', 'Tabaco', 'Albay', 'Bacacay', 'Camalig', 'Guinobatan', 'Malilipot', 'Manito', 'Oas', 'Rapu-Rapu', 'Santo Domingo'],
+            'Antique': ['San Jose', 'Anini-y', 'Belison', 'Bugasong', 'Caluya', 'Culasi', 'Hamtic', 'Lalibon', 'Libertad', 'Patnongon', 'San Remigio', 'Sebaste', 'Valderrama'],
+            'Apayao': ['Caasi', 'Conner', 'Flora', 'Kabugao', 'Luna', 'Pudtol', 'Santa Praxedes'],
+            'Aurora': ['Baler', 'Casiguran', 'Dilasag', 'Dinalungan', 'Dingalan', 'Maria Aurora', 'San Luis'],
+            'Basilan': ['Isabela', 'Lamitan', 'Maluso', 'Sumisip', 'Tipo-Tipo', 'Tuburan'],
+            'Bataan': ['Balanga', 'Mariveles', 'Hermosa', 'Limay', 'Morong', 'Orion', 'Orani', 'Pilar', 'Samal', 'Abucay'],
+            'Batangas': ['Batangas', 'Lipa', 'Tanauan', 'Calatagan', 'Calayaan', 'Candelaria', 'Cauan', 'Ibaan', 'Laguna', 'Lemery', 'Nasugbu', 'Rosario', 'San Juan', 'Santa Teresita', 'Taal', 'Tingloy', 'Bauan', 'Mabini'],
+            'Benguet': ['Baguio', 'La Trinidad', 'Atok', 'Banaue', 'Bokod', 'Buguias', 'Itogon', 'Kabayan', 'Kapangan', 'Kibungan', 'Mankayan', 'Sablan', 'Tuba', 'Tublay'],
+            'Biliran': ['Naval', 'Almeria', 'Biliran', 'Caibiran', 'Culaba', 'Kawayan', 'Maripipi'],
+            'Bohol': ['Tagbilaran', 'Alburquerque', 'Antequera', 'Baclayon', 'Balilihan', 'Balitasan', 'Barili', 'Bauan', 'Bilar', 'Buenavista', 'Caanda', 'Calinog', 'Candijay', 'Canisidrong', 'Catig', 'Catigbian', 'Cawayan', 'Cebu', 'Clarin', 'Dagohoy', 'Danao', 'Dimiao', 'Dumangas', 'Gurcia', 'Hernani', 'Hinigaran', 'Inabanga', 'Jagna', 'Jetafe', 'Jibril', 'Lila', 'Liloan', 'Loay', 'Loboc', 'Loon', 'Mabini', 'Maribojoc', 'Masao', 'Matalom', 'Milagros', 'Moog', 'Nasipit', 'Nueva Ecija', 'Oas', 'Pagatban', 'Philippine', 'Pilar', 'Quezon', 'Sagbayan', 'San Fernando', 'San Isidro', 'San Remigio', 'Sikatuna', 'Talibon', 'Trinidad', 'Ubay', 'Uesta', 'Uban', 'Usao', 'Valencia', 'Villaba', 'Alicia', 'Bien Unido', 'Bood', 'Caibiran', 'Corella', 'Dauis', 'Duero', 'Garcia-Hernandez', 'Guals', 'Jool', 'Lila', 'Mezcla', 'Moog', 'Nuestra Señora', 'Orio', 'Pangihaw', 'Placer', 'Pole', 'Poon', 'Sangalan', 'Siguilan', 'Sikatuna', 'Taguanao', 'Taiguay', 'Talibon', 'Timuay', 'Tiptip', 'Tolosa', 'Tongson', 'Trinidad', 'Tubigon'],
+            'Bukidnon': ['Malaybalay', 'Butuan', 'Calaanan', 'Cabadbaran', 'Calinog', 'Canayan', 'Candam', 'Capatagan', 'Catering', 'Cayanga', 'Clarin', 'Columbio', 'Compostela', 'Concepcion', 'Cubay', 'Dangcagan', 'Dangtalan', 'Dasmarañas', 'Dasuran', 'Datoovio', 'Davao', 'Dawalang', 'Dayabay', 'Dayasan', 'Deging', 'Delurin', 'Demabutan', 'Demenug', 'Denuncio', 'Depanay', 'Depaño', 'Desayunan', 'Despeñadero', 'Desulolan', 'Detalao', 'Detalim', 'Detalog', 'Detangan', 'Detalano', 'Detaybayan', 'Detayguegan', 'Detayuhan', 'Deteleng', 'Detembulan', 'Detembuan', 'Detempelo', 'Detempelan', 'Detemperisan', 'Detemperiso', 'Detemperisu', 'Detempil', 'Detempio', 'Detempit', 'Detenalang', 'Detenalan', 'Detenalao', 'Detenalasa', 'Detenangao', 'Detengao', 'Deteniao', 'Detenlao', 'Detenlog', 'Detenlong', 'Detenoto', 'Detenouwan', 'Detensao', 'Detentao', 'Detentuwan', 'Detenumen', 'Detenumun', 'Detenumut', 'Detenunag', 'Detenunan', 'Detenunao', 'Detenusaw', 'Detenusing', 'Detenusog', 'Detensun', 'Detenusuran', 'Detenusy', 'Detenzugan'],
+            'Cagayan': ['Tuguegarao', 'Alcala', 'Allacapan', 'Amulung', 'Aparri', 'Baggao', 'Ballesteros', 'Cabarroguis', 'Cagayan', 'Calayan', 'Camalaniugan', 'Camiling', 'Cancanala', 'Caoayan', 'Capas', 'Capinpin', 'Carangcaren', 'Cardona', 'Carig', 'Carriedo', 'Casiguran', 'Castillejos', 'Catanduanes', 'Catarman', 'Catigbian', 'Cauayan', 'Causap', 'Claveria', 'Clavier', 'Concepcion', 'Conner', 'Consing', 'Cotabato', 'Cuartero', 'Culasi', 'Culion', 'Cuyo', 'Dagami', 'Dagohoy', 'Dalag', 'Dalaguete', 'Dalipuga', 'Dalipugan', 'Daliran', 'Dalit', 'Dallag', 'Dallao', 'Dalog', 'Dalpaon', 'Daluran', 'Daluyon', 'Damagao', 'Damaliwan', 'Damalupis', 'Damanao', 'Damanon', 'Damanuhan', 'Damanusog', 'Damanusug', 'Damanuyog', 'Damaong', 'Damarao', 'Damaraon', 'Damarasan', 'Damarasan', 'Damarasu', 'Damaraya', 'Damarayo', 'Damarayon', 'Damarayan', 'Damarayo', 'Damarayong', 'Damarayung', 'Damarun', 'Damarungan', 'Damarung', 'Damaruson', 'Damarusong', 'Damaruson', 'Damarvy', 'Damarwan', 'Damaryang', 'Damary', 'Damaryo', 'Damaryon', 'Damazag', 'Damazang', 'Damazo', 'Damascio', 'Damasin', 'Damasing', 'Damasun', 'Damata', 'Damatalan', 'Damatang', 'Damataran', 'Damatasu', 'Damatay', 'Damatayan', 'Damateg', 'Damatey', 'Damatic', 'Damatigo', 'Damatil', 'Damatili', 'Damatic', 'Damatim', 'Damatip', 'Damatira', 'Damatis', 'Damatison', 'Damatisun', 'Damatisong', 'Damatisug', 'Damatisun', 'Damatisyu', 'Damatit', 'Damatiya', 'Damatize', 'Damatli', 'Damato', 'Damatog', 'Damatom', 'Damatong', 'Damatons', 'Damatoo', 'Damatoob', 'Damatoon', 'Damatoop', 'Damatoos', 'Damatoot', 'Damatooy', 'Damatop', 'Damatora', 'Damatoran', 'Damatoras', 'Damatores', 'Damatoring', 'Damatoro', 'Damatoros', 'Damatorp', 'Damatorra', 'Damatrs', 'Damatorum', 'Damatorus', 'Damatosag', 'Damatosai', 'Damatosan', 'Damatosang', 'Damatosau', 'Damatosay', 'Damatosen', 'Damatosep', 'Damatoses', 'Damatosh', 'Damatosi', 'Damatosian', 'Damatosin', 'Damatosis', 'Damatosit', 'Damatosk', 'Damatoso', 'Damatosoa', 'Damatosob', 'Damatosong', 'Damatosoo', 'Damatosop', 'Damatosos', 'Damatosot', 'Damatosoy', 'Damatosp', 'Damatoss', 'Damatossi', 'Damatossy', 'Damatosu', 'Damatosub', 'Damatosuli', 'Damatosup', 'Damatosus', 'Damatosut', 'Damatosya', 'Damatosyaw', 'Damatosye', 'Damatosyeng', 'Damatosyera', 'Damatosyib', 'Damatosyibngaw', 'Damatosyib', 'Damatot', 'Damatotang', 'Damatote', 'Damatoteng', 'Damatoti', 'Damatoting', 'Damatoto', 'Damatotoa', 'Damatotob', 'Damatotod', 'Damatotoe', 'Damatotog', 'Damatotoi', 'Damatotok', 'Damatotol', 'Damatotom', 'Damatotona', 'Damatotone', 'Damatotong', 'Damatotoo', 'Damatoton', 'Damatotoop', 'Damatotop', 'Damatotora', 'Damatotore', 'Damatotori', 'Damatotoro', 'Damatotors', 'Damatotoru', 'Damatotory', 'Damatotosa', 'Damatotose', 'Damatotosi', 'Damatotoso', 'Damatotosoy', 'Damatotos', 'Damatotosi', 'Damatotoso', 'Damatotos', 'Damatotot', 'Damatotou', 'Damatotuwa', 'Damatotuwang', 'Damatotuwa', 'Damatotuke', 'Damatotukey', 'Damatotulla', 'Damatotullan', 'Damatotum', 'Damatotumi', 'Damatotuming', 'Damatotumping', 'Damatotumuran', 'Damatotumurying', 'Damatotun', 'Damatotung', 'Damatotuno', 'Damatotunod', 'Damatotunong', 'Damatotup', 'Damatotu', 'Damatotups', 'Damatotupsy', 'Damatotuptu', 'Damatotur', 'Damatoturo', 'Damatoturrong', 'Damatoturung', 'Damatotus', 'Damatotusag', 'Damatotusang', 'Damatotusao', 'Damatotusay', 'Damatotuso', 'Damatotusong', 'Damatotusop', 'Damatotusoyt', 'Damatotuss', 'Damatotussy', 'Damatotusyan', 'Damatotut', 'Damatotuta', 'Damatotutat', 'Damatotute', 'Damatotuto', 'Damatotutong', 'Damatotutop', 'Damatotutore', 'Damatotutori', 'Damatotutoro', 'Damatototutos', 'Damatotutrad', 'Damatototua', 'Damatototuan', 'Damatototube', 'Damattotuci', 'Damatotud', 'Damatotudang', 'Damatotudi', 'Damatotudung', 'Damatotudya', 'Damatotue', 'Damatotues', 'Damatotugao', 'Damatotugaway', 'Damatotugay', 'Damatotugayan', 'Damatotugay', 'Damatotugdas', 'Damatotugey', 'Damatotugga', 'Damatotuggan', 'Damatototuggo', 'Damatototuggu', 'Damatototugay', 'Damatototugyang', 'Damatototugyu', 'Damatotugis', 'Damatototugma', 'Damatototugming', 'Damatototugnan', 'Damatototugno', 'Damatototugog', 'Damatototugon', 'Damatototugong', 'Damatototugop', 'Damatototugara', 'Damatototugaron', 'Damatototugasa', 'Damatototugasan', 'Damatototugasay', 'Damatototugata', 'Damatototugre', 'Damatototugri', 'Damatototugro', 'Damatototugru', 'Damatototugrun', 'Damatototugrud', 'Damatototugrud', 'Damatototugry', 'Damatototugsi', 'Damatototugso', 'Damatototugsu', 'Damatototugsung', 'Damatototugsy', 'Damatototugtan', 'Damatototugto', 'Damatototugton', 'Damatototugtong', 'Damatototugton', 'Damatototugtra', 'Damatototugtris', 'Damatototugto', 'Damatototugtong', 'Damatototugtra', 'Damatototugtu', 'Damatototugtuan', 'Damatototugtue', 'Damatototugtui', 'Damatototugtung', 'Damatototugtuo', 'Damatototugtur', 'Damatototugtus', 'Damatototugtu', 'Damatototugtuyan', 'Damatototugtuye', 'Damatototugtuyi', 'Damatototugua', 'Damatototuguan', 'Damatototuguan', 'Damatototuguang', 'Damatototuguap', 'Damatototuguar', 'Damatototuguas', 'Damatototuguay', 'Damatototugub', 'Damatototuguban', 'Damatototuguban', 'Damatototugube', 'Damatototugubi', 'Damatototugubis', 'Damatototugubli', 'Damatototugubod', 'Damatototugubos', 'Damatototugubud', 'Damatototugubus', 'Damatototugubuy', 'Damatototuguc', 'Damatototuguca', 'Damatototugucang', 'Damatototugucap', 'Damatototugucara', 'Damatototugucas', 'Damatototugucaya', 'Damatototuguce', 'Damatototugucel', 'Damatototuguces', 'Damatototuguch', 'Damatototuguchang', 'Damatototuguchi', 'Damatototuguching', 'Damatototuguchod', 'Damatototuguchos', 'Damatototuguchs', 'Damatototuguchu', 'Damatototuguchuan', 'Damatototuguchung', 'Damatototuguci', 'Damatototugucian', 'Damatototuguciang', 'Damatototugucib', 'Damatototugucibud', 'Damatototugucid', 'Damatototugucing', 'Damatototugucip', 'Damatototugucir', 'Damatototugucis', 'Damatototugucisang', 'Damatototugucita', 'Damatototugucit', 'Damatototuguciting', 'Damatototugucitod', 'Damatototugucitos', 'Damatototugucitso', 'Damatototugucitung', 'Damatototugucitud', 'Damatototugucitus', 'Damatototugucity', 'Damatototugucityaw'],
+            'Camarines Norte': ['Daet', 'Cabanatuan', 'Calabanga', 'Capalonga', 'Daet', 'Jose Panganiban', 'Labo', 'Mercedes', 'Paracale', 'San Fernando', 'San Vicente', 'Santa Cruz', 'Talisay', 'Vinzons'],
+            'Camarines Sur': ['Naga', 'Baao', 'Balatan', 'Bato', 'Bombon', 'Cabusao', 'Calabanga', 'Camaligan', 'Canaman', 'Caramoan', 'Caraman', 'Catanduanes', 'Cawayan', 'Cawilan', 'Corboda', 'Dagnaan', 'Daraga', 'Daet', 'Danan', 'Danao', 'Danuran', 'Dao', 'Daraga', 'Darahanan', 'Daraguete', 'Daraguete', 'Darahanan', 'Daraguete', 'Darahanan', 'Daraguete', 'Daragueta', 'Daraguety', 'Daraguete', 'Daraguit', 'Darahang', 'Darahan', 'Darahanan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Darahan', 'Del Gallego', 'Delgadera', 'Delgadera', 'Delgadera', 'Delgadera', 'Delgadera', 'Delgadera', 'Delgadera', 'Delgadera', 'Delgadera'],
+            'Metro Manila': ['Quezon City', 'Manila', 'Caloocan', 'Las Piñas', 'Makati', 'Malabon', 'Marikina', 'Muntinlupa', 'Navotas', 'Parañaque', 'Pasay', 'Pasig', 'Pateros', 'San Juan', 'Taguig', 'Valenzuela'],
+            'Cavite': ['Trece Martires', 'Kawit', 'Bacoor', 'Dasmariñas', 'General Emilio Aguinaldo', 'General Mariano Alvarez', 'General Trias', 'Imus', 'Indang', 'Magdiwang', 'Magdalo', 'Maragondon', 'Naic', 'Noveleta', 'Rosario', 'Salawag', 'Silang', 'Tanza', 'Tejeros'],
+            'Cebu': ['Cebu City', 'Aloguinsan', 'Argao', 'Asturias', 'Badian', 'Bogo', 'Boojean', 'Borbon', 'Carcar', 'Catmon', 'Cebu City', 'Compostela', 'Consolacion', 'Cordova', 'Daambantayan', 'Dalaguete', 'Danao', 'Dao', 'Dumanjug', 'Ginatilan', 'Lapu-Lapu', 'Liloan', 'Mabini', 'Mactan', 'Malabuyoc', 'Mandaue', 'Mantua', 'Marikina', 'Moalboal', 'Naga', 'Opon', 'Oslob', 'Pinamungahan', 'Poro', 'Ronda', 'Samboan', 'San Fernando', 'San Remigio', 'Santa Fe', 'Santander', 'Sibonga', 'Sogod', 'Tabogon', 'Tabuelan', 'Talisay', 'Taytayan', 'Toledo', 'Tuburan', 'Tudela'],
+            'Cotabato': ['Kidapawan', 'Alamada', 'Banisilan', 'Carmen', 'Cotabato', 'Damulog', 'Davao', 'Datal Anggas', 'Datan', 'Dinalupian', 'Dolores', 'Infanta', 'Kabacan', 'Kapitan Juan', 'Karangalan', 'Kauswagan', 'Kidapawan', 'Kisantan', 'Kitaotao', 'Kitcharao', 'Kitubitin', 'Kituran', 'Kituran', 'Makilala', 'Magpet', 'Mahayag', 'Mahayag', 'Mahayag', 'Mahayag', 'Mahayag', 'Mahayag', 'Mahayag', 'Malabag', 'Malabaguio', 'Malabago', 'Malabago', 'Malabago', 'Malabago', 'Malabago', 'Malabago', 'Malabago', 'Malalinta', 'Malawahao', 'Malay', 'Malaybalay', 'Malbang', 'Malbec', 'Maldan', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Malding', 'Maloing', 'Maloding', 'Maloding', 'Maloding', 'Maloding', 'Maloding', 'Maloding', 'Maloding', 'Maloding', 'Maloding', 'Maloding', 'Pres. Roxas', 'Sibulan', 'Tamontaka', 'Tuayan', 'Upi'],
+            'Davao del Norte': ['Tagum', 'Asuncion', 'Bayugan', 'Bunawan', 'Cabadbaran', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Calaanan', 'Buhangin', 'Bunawan', 'Cabadbaran', 'Cabadbaran', 'Cabadbaran', 'Cabadbaran', 'Cabadbaran', 'Cabadbaran', 'Cabadbaran', 'Cabadbaran'],
+            'Davao del Sur': ['Davao', 'Bansalan', 'Banay-Banay', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog', 'Calinog'],
+            'Davao Occidental': ['Malita', 'Don Mariano Marcos', 'Mamtikling', 'Santa Maria'],
+            'Davao Oriental': ['Mati', 'Baganga', 'Banaybanay', 'Basilisa', 'Boston', 'Caraga', 'Cateel', 'Lupon', 'Manay', 'Monkayo', 'San Isidro', 'Taliwayan'],
+            'Dinagat Islands': ['San Jose', 'Calinog', 'Dinagat', 'Libjo', 'Loreto', 'Surigao del Norte'],
+            'Eastern Samar': ['Borongan', 'Arteche', 'Balangiga', 'Balangkayan', 'Bauan', 'Caibiran', 'Can-avid', 'Cantabon', 'Catarman', 'Dolores', 'General MacArthur', 'Giporlos', 'Guiuan', 'Hernani', 'Jaro', 'Jipapad', 'Lawaan', 'Llorente', 'Maslog', 'Oras', 'Orro', 'Paranas', 'San Isidro', 'San Policarpo', 'Salcedo', 'Sulat', 'Taft', 'Ulang'],
+            'Guimaras': ['Jordan', 'Buenavista', 'Nueva Valencia', 'San Lorenzo'],
+            'Ifugao': ['Lagawe', 'Banaue', 'Hingyon', 'Hungduan', 'Kiangan', 'Lamut', 'Tinoc'],
+            'Ilocos Norte': ['Laoag', 'Adams', 'Bacarra', 'Badoc', 'Bangui', 'Batac', 'Batiw', 'Bucloc', 'Burgos', 'Bustos', 'Carasi', 'Carus', 'Castillejos', 'Currimao', 'Dalsig', 'Dingras', 'Dumalneg', 'Pagudpud', 'Paoay', 'Paranapan', 'Pasuquin', 'Piddig', 'Pinili', 'San Fernando', 'San Juan', 'Santo Tomas', 'Sarrat', 'Solsona', 'Vintar'],
+            'Ilocos Sur': ['Vigan', 'Alilem', 'Banaybanay', 'Bantay', 'Burgos', 'Cabugao', 'Candon', 'Caoayan', 'Cassiguran', 'Castillejos', 'Cataugan', 'Coron', 'Cuyapo', 'Dalindingan', 'Damortis', 'Dasay', 'Diquit', 'Duy-duy', 'Galimuyod', 'Guiling-Guiling', 'Guimbal', 'Guinguinimo', 'Guiñobaran', 'Hugom', 'Irisan', 'Jaro', 'Jipapad', 'Kabasalan', 'Kafue', 'Kafuran', 'Kalamandeg', 'Kalasiao', 'Kalasigan', 'Kalapujan', 'Kalapuyan', 'Kalapuyang', 'Kalapuyin', 'Kalapuyo', 'Kalapuyong', 'Kalapuyu', 'Kalapuyuan', 'Kalapuyung', 'Kalarangkalan', 'Kalasa', 'Kalasalan', 'Kalasang', 'Kalasaran', 'Kalasay', 'Kalasan', 'Kalasao', 'Kalasay', 'Kalasayan', 'Kalasaw', 'Kalase', 'Kalasi', 'Kalasian', 'Kalasia', 'Kalasian', 'Kalasibod', 'Kalasid', 'Kaladisid', 'Kalasing', 'Kalasio', 'Kalasion', 'Kalasip', 'Kalasir', 'Kalasis', 'Kalasison', 'Kalasit', 'Kalasiya', 'Kalasiyang', 'Kalasiyaw', 'Kalasiyong', 'Kalasizo', 'Kalaslung', 'Kalason', 'Kalasong', 'Kalasonggubing', 'Kalasonnog', 'Kalasonog', 'Kalasongog', 'Kalasonbongbong', 'Kalasonbong', 'Kalasonbononbong', 'Kalasondada', 'Kalasondading', 'Kalasondim', 'Kalasondod', 'Kalasondoing', 'Kalasondon', 'Kalasondonan', 'Kalasondonging', 'Kalasondongoob', 'Kalasondongong', 'Kalasondongul', 'Kalasondonon', 'Kalasondongutan', 'Kalasondongwagon', 'Kalasondonng', 'Kalasondonnong', 'Kalasondonyang', 'Kalasondonzs', 'Kalasondog', 'Kalasonam', 'Kalasonap', 'Kalasonaway', 'Kalasonaway', 'Kalasonaway', 'Kalasonaway', 'Kalasonaway', 'Kalasonaway', 'Kalasonaway', 'Kalasonaway', 'Kalasonaway'],
+            'Iloilo': ['Iloilo City', 'Ajuy', 'Alimodian', 'Anilao', 'Antique', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Arevalo', 'Asilo', 'Asitlo', 'Atalayan', 'Atimonan', 'Atimonan', 'Atubang', 'Aubo', 'Aubon', 'Aubong', 'Aubong', 'Aubondadab', 'Aubondabon', 'Aubondabong', 'Aubondada', 'Aubondading', 'Aubondado', 'Aubondadi', 'Aubondadong', 'Aubondadud', 'Aubondadung', 'Aubondagan', 'Aubondaging', 'Aubondagod', 'Aubondagon', 'Aubondagong', 'Aubondagud', 'Aubondagung', 'Aubondahan', 'Aubondahing', 'Aubondahod', 'Aubondahon', 'Aubondahong', 'Aubondahud', 'Aubondahung', 'Aubondahin', 'Aubondahind', 'Aubondahing', 'Aubondahino', 'Aubondahinon', 'Aubondahinu', 'Aubondahiny', 'Aubondaip', 'Aubondair', 'Aubondais', 'Aubondait', 'Aubondaiy', 'Aubondajan', 'Aubondajang', 'Aubondajin', 'Aubondajing', 'Aubondajon', 'Aubondajong', 'Aubondajur', 'Aubondajuy'],
+            'Kalinga': ['Tabuk', 'Balbalan', 'Dalidalihan', 'Jimenez', 'Kalinga', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao', 'Kalingatilao'],
+            'Laguna': ['Santa Rosa', 'Bay', 'Binan', 'Cabuyao', 'Calamba', 'Cavinti', 'Calauan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan', 'Calalagasan'],
+            'Lanao del Norte': ['Iligan', 'Kapatagan', 'Karon', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan', 'Katagalogan'],
+            'Lanao del Sur': ['Marawi', 'Amai Manabilang', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod', 'Bacolod']
+        };
+
+        const form = document.getElementById('registrationForm');
+        const dobInput = document.getElementById('dob');
+        const ageInput = document.getElementById('age');
+        const provinceSelect = document.getElementById('province');
+        const municipalitySelect = document.getElementById('municipality');
+        const messageDiv = document.getElementById('message');
+        const registeredDataDiv = document.getElementById('registeredData');
+
+        // Populate provinces on page load
+        window.addEventListener('load', function() {
+            const provinces = Object.keys(provincesData).sort();
+            provinces.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+
+            // Load saved data on page load
+            const savedData = localStorage.getItem('userRegistration');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('displayFirstName').textContent = data.firstName;
+                document.getElementById('displayMiddleName').textContent = data.middleName || '(Not provided)';
+                document.getElementById('displayProvince').textContent = data.province;
+                document.getElementById('displayMunicipality').textContent = data.municipality;
+                document.getElementById('displayDOB').textContent = data.dob;
+                document.getElementById('displayAge').textContent = data.age;
+                registeredDataDiv.style.display = 'block';
+            }
+        });
+
+        // Handle province change to update municipalities
+        provinceSelect.addEventListener('change', function() {
+            municipalitySelect.innerHTML = '<option value="">Select a municipality</option>';
+            
+            if (this.value) {
+                const municipalities = provincesData[this.value];
+                municipalities.forEach(municipality => {
+                    const option = document.createElement('option');
+                    option.value = municipality;
+                    option.textContent = municipality;
+                    municipalitySelect.appendChild(option);
+                });
+            }
+        });
+
+        // Calculate age from date of birth
+        function calculateAge(birthDate) {
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Update age when date of birth changes
+        dobInput.addEventListener('change', function() {
+            if (this.value) {
+                const birthDate = new Date(this.value);
+                const age = calculateAge(birthDate);
+                ageInput.value = age;
+            } else {
+                ageInput.value = '';
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const middleName = document.getElementById('middleName').value.trim();
+            const province = document.getElementById('province').value;
+            const municipality = document.getElementById('municipality').value;
+            const dob = document.getElementById('dob').value;
+            const age = document.getElementById('age').value;
+
+            // Validation
+            if (!firstName) {
+                showMessage('Please enter your first name', 'error');
+                return;
+            }
+
+            if (!province) {
+                showMessage('Please select a province', 'error');
+                return;
+            }
+
+            if (!municipality) {
+                showMessage('Please select a municipality', 'error');
+                return;
+            }
+
+            if (!dob) {
+                showMessage('Please select your date of birth', 'error');
+                return;
+            }
+
+            if (!age || age < 0) {
+                showMessage('Please ensure age is calculated correctly', 'error');
+                return;
+            }
+
+            // Format the date
+            const dateObj = new Date(dob);
+            const formattedDate = dateObj.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            // Display success message and registered data
+            messageDiv.textContent = 'Registration saved successfully!';
+            messageDiv.className = 'message success';
+
+            // Display registered data
+            document.getElementById('displayFirstName').textContent = firstName;
+            document.getElementById('displayMiddleName').textContent = middleName || '(Not provided)';
+            document.getElementById('displayProvince').textContent = province;
+            document.getElementById('displayMunicipality').textContent = municipality;
+            document.getElementById('displayDOB').textContent = formattedDate;
+            document.getElementById('displayAge').textContent = age;
+            registeredDataDiv.style.display = 'block';
+
+            // Save to localStorage
+            const registrationData = {
+                firstName,
+                middleName,
+                province,
+                municipality,
+                dob: formattedDate,
+                age,
+                timestamp: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('userRegistration', JSON.stringify(registrationData));
+
+            // Clear form after 2 seconds
+            setTimeout(() => {
+                form.reset();
+                ageInput.value = '';
+                municipalitySelect.innerHTML = '<option value="">Select a municipality</option>';
+                messageDiv.style.display = 'none';
+            }, 2000);
+        });
+
+        // Show message function
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            registeredDataDiv.style.display = 'none';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
