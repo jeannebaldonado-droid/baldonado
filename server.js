@@ -1,72 +1,207 @@
+// server.js — Express + Socket.IO server with User Registration
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { pool, initializeDatabase } = require('./db');
+
 const app = express();
-const PORT = 3000;
+const server = http.createServer(app);
+const io = new Server(server);
+const PORT = process.env.PORT || 4000;
+const JWT_SECRET = 'your_jwt_secret_key_here'; // In production, use environment variable
 
 // Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Initialize database
+initializeDatabase();
+
+// Authentication middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token required' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+    req.user = user;
+    next();
+  });
+};
 
 // Routes
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'registration.html'));
-});
+app.post('/api/register', async (req, res) => {
+  try {
+    const {
+      firstName,
+      middleName,
+      province,
+      municipality,
+      dob,
+      age,
+      email,
+      password
+    } = req.body;
 
-// API endpoint to save registration data
-app.post('/api/register', (req, res) => {
-    const { firstName, middleName, province, municipality, dob, age } = req.body;
-
-    // Validation
-    if (!firstName || !province || !municipality || !dob || !age) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'All required fields must be filled' 
-        });
+    // Validate required fields
+    if (!firstName || !province || !municipality || !dob || !age || !email || !password) {
+      return res.status(400).json({ error: 'All required fields must be filled' });
     }
 
-    // Here you would typically save to a database
-    // For now, we'll just log and return success
-    const registrationData = {
+    // Check if user already exists
+    const [existingUsers] = await pool.execute(
+      'SELECT id FROM users WHERE email = ?',
+      [email]
+    );
+
+    if (existingUsers.length > 0) {
+      return res.status(409).json({ error: 'User with this email already exists' });
+    }
+
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert user
+    const [result] = await pool.execute(
+      `INSERT INTO users (first_name, middle_name, province, municipality, date_of_birth, age, email, password)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [firstName, middleName || null, province, municipality, dob, age, email, hashedPassword]
+    );
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: result.insertId, email: email },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      token: token,
+      user: {
+        id: result.insertId,
         firstName,
-        middleName: middleName || 'Not provided',
+        middleName,
         province,
         municipality,
         dob,
         age,
-        timestamp: new Date().toLocaleString()
-    };
-
-    console.log('Registration data received:', registrationData);
-
-    res.json({ 
-        success: true, 
-        message: 'Registration saved successfully!',
-        data: registrationData
+        email
+      }
     });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-// API endpoint to retrieve registration data
-app.get('/api/register', (req, res) => {
-    // In a real application, you would fetch from a database
-    // For now, we'll return a sample response
-    res.json({ 
-        success: true,
-        message: 'Registration data retrieved'
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Find user
+    const [users] = await pool.execute(
+      'SELECT * FROM users WHERE email = ?',
+      [email]
+    );
+
+    if (users.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const user = users[0];
+
+    // Check password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      message: 'Login successful',
+      token: token,
+      user: {
+        id: user.id,
+        firstName: user.first_name,
+        middleName: user.middle_name,
+        province: user.province,
+        municipality: user.municipality,
+        dob: user.date_of_birth,
+        age: user.age,
+        email: user.email
+      }
     });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Error:', err.message);
-    res.status(500).json({ 
-        success: false, 
-        message: 'Internal server error' 
-    });
+app.get('/api/profile', authenticateToken, async (req, res) => {
+  try {
+    const [users] = await pool.execute(
+      'SELECT id, first_name, middle_name, province, municipality, date_of_birth, age, email, created_at FROM users WHERE id = ?',
+      [req.user.id]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user: users[0] });
+
+  } catch (error) {
+    console.error('Profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Registration server is running at http://localhost:${PORT}`);
-    console.log('Press Ctrl+C to stop the server');
+// Socket.IO functionality (existing chat functionality)
+const users = new Map();
+
+io.on('connection', socket => {
+  socket.on('join', username => {
+    users.set(socket.id, username || 'Anonymous');
+    io.emit('users', Array.from(users.values()));
+  });
+
+  socket.on('chat message', text => {
+    const user = users.get(socket.id) || 'Anonymous';
+    const payload = { user, text, ts: Date.now() };
+    io.emit('chat message', payload);
+  });
+
+  socket.on('disconnect', ()=>{
+    users.delete(socket.id);
+    io.emit('users', Array.from(users.values()));
+  });
 });
+
+server.listen(PORT, ()=> console.log(`Server running: http://localhost:${PORT}`));

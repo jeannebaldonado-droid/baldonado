@@ -19,15 +19,91 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '01010101 00110011 11110000 10101010';
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            right: 5%;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: rgba(0, 255, 255, 0.1);
+            white-space: nowrap;
+            overflow: hidden;
+            animation: scrollText 20s linear infinite;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(0, 200, 255, 0.1) 1px,
+                    rgba(0, 200, 255, 0.1) 2px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(0, 200, 255, 0.1) 1px,
+                    rgba(0, 200, 255, 0.1) 2px
+                );
+            background-size: 30px 30px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        @keyframes scrollText {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
 
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            box-shadow:
+                0 15px 35px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(0, 200, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             max-width: 500px;
             width: 100%;
+            position: relative;
+            border: 2px solid rgba(0, 200, 255, 0.3);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(90deg, #002244, #003366, #002244);
+            border-radius: 10px 10px 0 0;
+            border-bottom: 1px solid rgba(0, 200, 255, 0.3);
+        }
+
+        .container::after {
+            content: '● ● ●';
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            color: rgba(0, 255, 0, 0.8);
+            font-size: 10px;
+            letter-spacing: 5px;
         }
 
         h1 {
@@ -112,24 +188,32 @@
         }
 
         .btn-save {
-            background: #667eea;
+            background: linear-gradient(135deg, #0066cc, #004499);
             color: white;
+            border: 1px solid #0088ff;
+            box-shadow: 0 2px 8px rgba(0, 100, 200, 0.3);
         }
 
         .btn-save:hover {
-            background: #5568d3;
+            background: linear-gradient(135deg, #0088ff, #0066cc);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 136, 255, 0.5);
+            border-color: #00aaff;
         }
 
         .btn-reset {
-            background: #f0f0f0;
-            color: #333;
-            border: 2px solid #e0e0e0;
+            background: linear-gradient(135deg, #333, #555);
+            color: #00ffff;
+            border: 1px solid #666;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .btn-reset:hover {
-            background: #e0e0e0;
+            background: linear-gradient(135deg, #555, #333);
+            color: #66ffff;
+            border-color: #888;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
 
         .message {
@@ -275,7 +359,7 @@
                 <div class="form-group">
                     <label for="municipality">Municipality *</label>
                     <select id="municipality" name="municipality" required>
-                        <option value="">Select a municipality</option>
+                        <option value="">municipality</option>
                     </select>
                 </div>
             </div>
@@ -292,9 +376,19 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required minlength="6">
+            </div>
+
             <div class="button-group">
-                <button type="submit" class="btn-save">Save Registration</button>
-                <button type="reset" class="btn-reset">Clear Form</button>
+                <button type="submit" class="btn-save">Save</button>
+                <button type="reset" class="btn-reset">Clear</button>
             </div>
 
             <div id="message" class="message"></div>
@@ -442,7 +536,7 @@
         });
 
         // Handle form submission
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const firstName = document.getElementById('firstName').value.trim();
@@ -451,6 +545,8 @@
             const municipality = document.getElementById('municipality').value;
             const dob = document.getElementById('dob').value;
             const age = document.getElementById('age').value;
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
             // Validation
             if (!firstName) {
@@ -478,47 +574,78 @@
                 return;
             }
 
-            // Format the date
-            const dateObj = new Date(dob);
-            const formattedDate = dateObj.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
+            if (!email) {
+                showMessage('Please enter your email address', 'error');
+                return;
+            }
 
-            // Display success message and registered data
-            messageDiv.textContent = 'Registration saved successfully!';
-            messageDiv.className = 'message success';
+            if (!password || password.length < 6) {
+                showMessage('Password must be at least 6 characters long', 'error');
+                return;
+            }
 
-            // Display registered data
-            document.getElementById('displayFirstName').textContent = firstName;
-            document.getElementById('displayMiddleName').textContent = middleName || '(Not provided)';
-            document.getElementById('displayProvince').textContent = province;
-            document.getElementById('displayMunicipality').textContent = municipality;
-            document.getElementById('displayDOB').textContent = formattedDate;
-            document.getElementById('displayAge').textContent = age;
-            registeredDataDiv.style.display = 'block';
+            // Show loading message
+            showMessage('Registering...', 'success');
 
-            // Save to localStorage
-            const registrationData = {
-                firstName,
-                middleName,
-                province,
-                municipality,
-                dob: formattedDate,
-                age,
-                timestamp: new Date().toLocaleString()
-            };
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        firstName,
+                        middleName,
+                        province,
+                        municipality,
+                        dob,
+                        age,
+                        email,
+                        password
+                    })
+                });
 
-            localStorage.setItem('userRegistration', JSON.stringify(registrationData));
+                const data = await response.json();
 
-            // Clear form after 2 seconds
-            setTimeout(() => {
-                form.reset();
-                ageInput.value = '';
-                municipalitySelect.innerHTML = '<option value="">Select a municipality</option>';
-                messageDiv.style.display = 'none';
-            }, 2000);
+                if (response.ok) {
+                    // Store JWT token
+                    localStorage.setItem('token', data.token);
+
+                    // Format the date
+                    const dateObj = new Date(dob);
+                    const formattedDate = dateObj.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    // Display success message and registered data
+                    showMessage('Registration successful!', 'success');
+
+                    // Display registered data
+                    document.getElementById('displayFirstName').textContent = firstName;
+                    document.getElementById('displayMiddleName').textContent = middleName || '(Not provided)';
+                    document.getElementById('displayProvince').textContent = province;
+                    document.getElementById('displayMunicipality').textContent = municipality;
+                    document.getElementById('displayDOB').textContent = formattedDate;
+                    document.getElementById('displayAge').textContent = age;
+                    registeredDataDiv.style.display = 'block';
+
+                    // Clear form after 3 seconds
+                    setTimeout(() => {
+                        form.reset();
+                        ageInput.value = '';
+                        municipalitySelect.innerHTML = '<option value="">municipality</option>';
+                        messageDiv.style.display = 'none';
+                        registeredDataDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    showMessage(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage('Network error. Please try again.', 'error');
+            }
         });
 
         // Show message function
